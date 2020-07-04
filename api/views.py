@@ -17,8 +17,17 @@ class UserView(viewsets.ModelViewSet):
 
 def get_data(request):
     user_data = User.objects.all()
+    activity_data = ActivityPeriod.objects.all()
     data = list(user_data.values())
+    for d in data:
+        ap_data = list(activity_data.values())
+        d['activity_periods'] = []
+        for ap in ap_data:
+            if d['id'] == ap['user_id']:
+                del ap['id']
+                del ap['user_id']
+                d['activity_periods'].append(ap)
+        d['id'] = d['user_id']
+        del d['user_id']    
     data1 = {"ok":True, "members": data}
-    print('==============')
-    print(data1)
     return JsonResponse(data1)
